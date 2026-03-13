@@ -16,7 +16,6 @@ import TaskNode from './nodes/TaskNode';
 import ImageNode from './nodes/ImageNode';
 import GroupNode from './nodes/GroupNode';
 import CanvasToolbar from './CanvasToolbar';
-import CanvasHeader from './CanvasHeader';
 import CanvasColorPicker from './CanvasColorPicker';
 import AIChatSidebar from './AIChatSidebar';
 import { useCanvasStore } from '@/store/useCanvasStore';
@@ -88,14 +87,19 @@ function Flow() {
   const setNodes = useCanvasStore((state) => state.setNodes);
   const setEdges = useCanvasStore((state) => state.setEdges);
   const accentColor = useCanvasStore((state) => state.accentColor);
+  const hasInitialized = useCanvasStore((state) => state.hasInitialized);
+  const setHasInitialized = useCanvasStore((state) => state.setHasInitialized);
 
   const { screenToFlowPosition } = useReactFlow();
 
-  // Initialize store with initial data
+  // Initialize store with initial data only if not initialized
   useEffect(() => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
-  }, [setNodes, setEdges]);
+    if (!hasInitialized) {
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+      setHasInitialized(true);
+    }
+  }, [hasInitialized, setNodes, setEdges, setHasInitialized]);
 
   const lastClickTime = useRef(0);
 
@@ -139,6 +143,7 @@ function Flow() {
       className="bg-obsidian-bg"
       minZoom={0.1}
       maxZoom={4}
+      deleteKeyCode={['Backspace', 'Delete']}
     >
       <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#3d3d3d" />
       <Controls />
@@ -152,7 +157,6 @@ function Flow() {
         maskColor="rgba(30, 30, 30, 0.7)"
       />
       
-      <CanvasHeader />
       <CanvasToolbar />
       <CanvasColorPicker />
       <AIChatSidebar />

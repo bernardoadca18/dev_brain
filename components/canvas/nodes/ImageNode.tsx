@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import React, { useState, useRef } from 'react';
+import { Handle, Position } from '@xyflow/react';
 import { ImageNodeData } from '@/types';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Upload, ImageIcon } from 'lucide-react';
 import { useCanvasStore } from '@/store/useCanvasStore';
 
 export default function ImageNode({ id, data, selected }: { id: string, data: ImageNodeData, selected?: boolean }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDesc, setIsEditingDesc] = useState(false);
-  const [isEditingUrl, setIsEditingUrl] = useState(!data.imageUrl);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const setNodes = useCanvasStore((state) => state.setNodes);
@@ -26,9 +26,19 @@ export default function ImageNode({ id, data, selected }: { id: string, data: Im
     updateNodeData(id, { description: e.target.value });
   };
 
-  const handleUrlBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setIsEditingUrl(false);
-    updateNodeData(id, { imageUrl: e.target.value });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateNodeData(id, { imageUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -71,31 +81,40 @@ export default function ImageNode({ id, data, selected }: { id: string, data: Im
           </button>
         </div>
 
-        <div className="w-full bg-obsidian-bg rounded overflow-hidden min-h-[100px] flex items-center justify-center border border-obsidian-border relative">
-          {isEditingUrl ? (
-            <input
-              type="text"
-              defaultValue={data.imageUrl || ''}
-              onBlur={handleUrlBlur}
-              onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-              className="nodrag bg-obsidian-card text-obsidian-text text-xs w-11/12 p-2 rounded border border-obsidian-border focus:outline-none focus:border-accent absolute z-10"
-              autoFocus
-              placeholder="Paste image URL..."
-            />
-          ) : data.imageUrl ? (
-            <img 
-              src={data.imageUrl} 
-              alt={data.title || 'Node image'} 
-              className="w-full h-auto object-cover"
-              onDoubleClick={(e) => { e.stopPropagation(); setIsEditingUrl(true); }}
-            />
+        <div className="w-full bg-obsidian-bg rounded overflow-hidden min-h-[100px] flex flex-col items-center justify-center border border-obsidian-border relative group/image">
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+          />
+          
+          {data.imageUrl ? (
+            <>
+              <img 
+                src={data.imageUrl} 
+                alt={data.title || 'Node image'} 
+                className="w-full h-auto object-cover"
+              />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                <button 
+                  onClick={triggerFileInput}
+                  className="bg-obsidian-card text-obsidian-text px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 hover:bg-obsidian-border transition-colors shadow-lg"
+                >
+                  <Upload size={14} />
+                  Replace Image
+                </button>
+              </div>
+            </>
           ) : (
-            <div 
-              className="text-obsidian-text-muted text-xs cursor-pointer w-full h-full flex items-center justify-center p-4 text-center"
-              onDoubleClick={(e) => { e.stopPropagation(); setIsEditingUrl(true); }}
+            <button 
+              onClick={triggerFileInput}
+              className="text-obsidian-text-muted text-xs cursor-pointer w-full h-full flex flex-col items-center justify-center p-6 text-center hover:text-obsidian-text hover:bg-obsidian-border/50 transition-colors gap-2"
             >
-              Double-click to add image URL
-            </div>
+              <ImageIcon size={24} className="opacity-50" />
+              <span>Click to upload image</span>
+            </button>
           )}
         </div>
 
