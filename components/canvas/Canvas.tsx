@@ -1,32 +1,35 @@
 'use client';
 
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import {
   ReactFlow,
   MiniMap,
   Controls,
   Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Connection,
-  Edge,
-  Node,
   BackgroundVariant,
   ReactFlowProvider,
-  Panel,
   useReactFlow,
 } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import NoteNode from './nodes/NoteNode';
 import TaskNode from './nodes/TaskNode';
+import ImageNode from './nodes/ImageNode';
+import GroupNode from './nodes/GroupNode';
+import CanvasToolbar from './CanvasToolbar';
+import CanvasHeader from './CanvasHeader';
+import CanvasColorPicker from './CanvasColorPicker';
+import AIChatSidebar from './AIChatSidebar';
+import { useCanvasStore } from '@/store/useCanvasStore';
+import { AppNode } from '@/types';
 
 const nodeTypes = {
   note: NoteNode,
   task: TaskNode,
+  image: ImageNode,
+  group: GroupNode,
 };
 
-const initialNodes: Node[] = [
+const initialNodes: AppNode[] = [
   {
     id: '1',
     type: 'note',
@@ -70,22 +73,29 @@ const initialNodes: Node[] = [
   },
 ];
 
-const initialEdges: Edge[] = [
+const initialEdges = [
   { id: 'e1-2', source: '1', target: '2', animated: true },
   { id: 'e1-3', source: '1', target: '3', animated: true },
   { id: 'e1-4', source: '1', target: '4', animated: false },
 ];
 
 function Flow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [accentColor, setAccentColor] = useState('#a882ff');
+  const nodes = useCanvasStore((state) => state.nodes);
+  const edges = useCanvasStore((state) => state.edges);
+  const onNodesChange = useCanvasStore((state) => state.onNodesChange);
+  const onEdgesChange = useCanvasStore((state) => state.onEdgesChange);
+  const onConnect = useCanvasStore((state) => state.onConnect);
+  const setNodes = useCanvasStore((state) => state.setNodes);
+  const setEdges = useCanvasStore((state) => state.setEdges);
+  const accentColor = useCanvasStore((state) => state.accentColor);
+
   const { screenToFlowPosition } = useReactFlow();
 
-  const onConnect = useCallback(
-    (params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
+  // Initialize store with initial data
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [setNodes, setEdges]);
 
   const lastClickTime = useRef(0);
 
@@ -98,7 +108,7 @@ function Flow() {
           y: event.clientY,
         });
 
-        const newNode: Node = {
+        const newNode: AppNode = {
           id: uuidv4(),
           type: 'note',
           position,
@@ -112,7 +122,7 @@ function Flow() {
     [screenToFlowPosition, setNodes]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.style.setProperty('--accent-color', accentColor);
   }, [accentColor]);
 
@@ -135,45 +145,17 @@ function Flow() {
       <MiniMap 
         nodeColor={(node) => {
           if (node.type === 'task') return 'var(--accent-color)';
+          if (node.type === 'image') return '#4a90e2';
+          if (node.type === 'group') return 'transparent';
           return '#3d3d3d';
         }}
         maskColor="rgba(30, 30, 30, 0.7)"
       />
-      <Panel position="top-right" className="bg-obsidian-card p-3 rounded-xl border border-obsidian-border shadow-lg flex items-center gap-3">
-        <span className="text-sm font-medium text-obsidian-text">Accent Color</span>
-        <input 
-          type="color" 
-          value={accentColor} 
-          onChange={(e) => setAccentColor(e.target.value)}
-          className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent"
-        />
-      </Panel>
-      <Panel position="top-center" className="bg-obsidian-card p-2 rounded-xl border border-obsidian-border shadow-lg flex items-center gap-2 mt-4">
-        <button 
-          onClick={() => {
-            const position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-            setNodes((nds) => nds.concat({ id: uuidv4(), type: 'note', position, data: { title: 'New Note', content: 'Double click to edit...' } }));
-          }}
-          className="px-3 py-1.5 text-sm font-medium text-obsidian-text hover:bg-obsidian-border rounded transition-colors"
-        >
-          + Note
-        </button>
-        <button 
-          onClick={() => {
-            const position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-            setNodes((nds) => nds.concat({ id: uuidv4(), type: 'task', position, data: { title: 'New Task List', tasks: [] } }));
-          }}
-          className="px-3 py-1.5 text-sm font-medium text-obsidian-text hover:bg-obsidian-border rounded transition-colors"
-        >
-          + Task List
-        </button>
-      </Panel>
-      <Panel position="top-left" className="bg-obsidian-card p-4 rounded-xl border border-obsidian-border shadow-lg max-w-xs">
-        <h1 className="text-lg font-bold text-obsidian-text mb-1">Vália Wiki & Planner</h1>
-        <p className="text-xs text-obsidian-text-muted">
-          Double-click anywhere to create a new note. Drag handles to connect nodes.
-        </p>
-      </Panel>
+      
+      <CanvasHeader />
+      <CanvasToolbar />
+      <CanvasColorPicker />
+      <AIChatSidebar />
     </ReactFlow>
   );
 }
@@ -187,3 +169,4 @@ export default function Canvas() {
     </div>
   );
 }
+

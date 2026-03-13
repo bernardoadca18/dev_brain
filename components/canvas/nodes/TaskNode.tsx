@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { Trash2, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -20,13 +20,17 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import TaskItem from './TaskItem';
+import { TaskNodeData, Task } from '@/types';
+import { useCanvasStore } from '@/store/useCanvasStore';
 
-export default function TaskNode({ id, data, selected }: any) {
+export default function TaskNode({ id, data, selected }: { id: string, data: TaskNodeData, selected?: boolean }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(data.title);
-  const [tasks, setTasks] = useState<{id: string, content: string, completed: boolean}[]>(data.tasks || []);
+  const [tasks, setTasks] = useState<Task[]>(data.tasks || []);
   const [newTaskContent, setNewTaskContent] = useState('');
-  const { setNodes } = useReactFlow();
+  
+  const updateNodeDataStore = useCanvasStore((state) => state.updateNodeData);
+  const setNodes = useCanvasStore((state) => state.setNodes);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -39,15 +43,8 @@ export default function TaskNode({ id, data, selected }: any) {
     })
   );
 
-  const updateNodeData = (newTitle: string, newTasks: any[]) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          node.data = { ...node.data, title: newTitle, tasks: newTasks };
-        }
-        return node;
-      })
-    );
+  const updateNodeData = (newTitle: string, newTasks: Task[]) => {
+    updateNodeDataStore(id, { title: newTitle, tasks: newTasks });
   };
 
   const handleTitleBlur = () => {

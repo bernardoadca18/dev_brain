@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
+import { NoteNodeData } from '@/types';
+import { useCanvasStore } from '@/store/useCanvasStore';
 
-export default function NoteNode({ id, data, selected }: any) {
+export default function NoteNode({ id, data, selected }: { id: string, data: NoteNodeData, selected?: boolean }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(data.title);
   const [content, setContent] = useState(data.content);
-  const { setNodes } = useReactFlow();
+  
+  const updateNodeData = useCanvasStore((state) => state.updateNodeData);
+  const setNodes = useCanvasStore((state) => state.setNodes);
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -17,14 +21,7 @@ export default function NoteNode({ id, data, selected }: any) {
 
   const handleBlur = () => {
     setIsEditing(false);
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          node.data = { ...node.data, title, content };
-        }
-        return node;
-      })
-    );
+    updateNodeData(id, { title, content });
   };
 
   const handleDelete = (e: React.MouseEvent) => {
