@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Handle, Position, NodeProps, Node } from '@xyflow/react';
+import { NodeProps } from '@xyflow/react';
 import { Trash2, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -22,8 +22,9 @@ import {
 import TaskItem from './TaskItem';
 import { TaskNodeData, Task } from '@/types';
 import { useCanvasStore } from '@/store/useCanvasStore';
+import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function TaskNode({ id, data, selected }: { id: string, data: TaskNodeData, selected?: boolean }) {
+export default function TaskNode({ id, data, selected, width, height }: NodeProps & { data: TaskNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(data.title);
   const [tasks, setTasks] = useState<Task[]>(data.tasks || []);
@@ -99,19 +100,9 @@ export default function TaskNode({ id, data, selected }: { id: string, data: Tas
   };
 
   return (
-    <div 
-      className={`bg-obsidian-card border rounded-xl shadow-lg w-72 transition-colors duration-200 group ${
-        selected ? 'border-accent shadow-[0_0_15px_rgba(168,130,255,0.2)]' : 'border-obsidian-border'
-      }`}
-      style={{
-        boxShadow: selected ? '0 0 15px var(--accent-color)' : undefined,
-        borderColor: selected ? 'var(--accent-color)' : undefined,
-      }}
-    >
-      <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-obsidian-border hover:!bg-accent transition-colors" />
-      
-      <div className="p-4 flex flex-col gap-3">
-        <div className="flex justify-between items-start">
+    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight="auto">
+      <div className="p-6 flex flex-col gap-4 h-full">
+        <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
             <input
               type="text"
@@ -119,12 +110,14 @@ export default function TaskNode({ id, data, selected }: { id: string, data: Tas
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleBlur}
               onKeyDown={(e) => e.key === 'Enter' && handleTitleBlur()}
-              className="nodrag bg-obsidian-bg text-obsidian-text font-bold text-sm w-full p-1 rounded border border-obsidian-border focus:outline-none focus:border-accent"
+              className="nodrag bg-obsidian-bg text-obsidian-text font-bold w-full p-2 rounded border border-obsidian-border focus:outline-none focus:border-accent"
+              style={{ fontSize: 'calc(16px * var(--node-scale))' }}
               autoFocus
             />
           ) : (
             <h3 
-              className="text-obsidian-text font-bold text-sm leading-tight select-none cursor-text flex-1"
+              className="text-obsidian-text font-bold leading-tight select-none cursor-text flex-1"
+              style={{ fontSize: 'calc(16px * var(--node-scale))' }}
               onDoubleClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); }}
             >
               {title}
@@ -132,13 +125,13 @@ export default function TaskNode({ id, data, selected }: { id: string, data: Tas
           )}
           <button 
             onClick={handleDelete}
-            className="text-obsidian-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1 ml-2"
+            className="text-obsidian-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1 ml-2 shrink-0"
           >
-            <Trash2 size={14} />
+            <Trash2 size={16} />
           </button>
         </div>
 
-        <div className="flex flex-col gap-2 nodrag">
+        <div className="flex flex-col gap-3 nodrag flex-1 overflow-y-auto min-h-0">
           <DndContext 
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -161,25 +154,24 @@ export default function TaskNode({ id, data, selected }: { id: string, data: Tas
           </DndContext>
         </div>
 
-        <form onSubmit={addTask} className="flex items-center gap-2 mt-1 nodrag">
+        <form onSubmit={addTask} className="flex items-center gap-3 mt-1 nodrag shrink-0">
           <input
             type="text"
             value={newTaskContent}
             onChange={(e) => setNewTaskContent(e.target.value)}
             placeholder="Add a task..."
-            className="bg-obsidian-bg text-obsidian-text-muted text-xs w-full p-2 rounded border border-obsidian-border focus:outline-none focus:border-accent"
+            className="bg-obsidian-bg text-obsidian-text-muted w-full p-3 rounded border border-obsidian-border focus:outline-none focus:border-accent"
+            style={{ fontSize: 'calc(14px * var(--node-scale))' }}
           />
           <button 
             type="submit"
             disabled={!newTaskContent.trim()}
-            className="bg-obsidian-bg border border-obsidian-border text-obsidian-text p-2 rounded hover:text-accent hover:border-accent disabled:opacity-50 transition-colors"
+            className="bg-obsidian-bg border border-obsidian-border text-obsidian-text p-3 rounded hover:text-accent hover:border-accent disabled:opacity-50 transition-colors flex items-center justify-center"
           >
-            <Plus size={14} />
+            <Plus size={16} />
           </button>
         </form>
       </div>
-
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3 !bg-obsidian-border hover:!bg-accent transition-colors" />
-    </div>
+    </BaseNodeWrapper>
   );
 }

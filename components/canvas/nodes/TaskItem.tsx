@@ -48,7 +48,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: TaskIte
       <div 
         {...attributes} 
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-obsidian-text-muted hover:text-obsidian-text p-0.5"
+        className="cursor-grab active:cursor-grabbing text-obsidian-text-muted hover:text-obsidian-text p-0.5 shrink-0"
       >
         <GripVertical size={14} />
       </div>
@@ -57,8 +57,12 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: TaskIte
         type="checkbox" 
         checked={task.completed}
         onChange={onToggle}
-        className="w-3.5 h-3.5 rounded border-obsidian-border text-accent focus:ring-accent focus:ring-offset-obsidian-bg bg-obsidian-card cursor-pointer"
-        style={{ accentColor: 'var(--accent-color)' }}
+        className="rounded border-obsidian-border text-accent focus:ring-accent focus:ring-offset-obsidian-bg bg-obsidian-card cursor-pointer shrink-0"
+        style={{ 
+          accentColor: 'var(--accent-color)',
+          width: 'calc(14px * var(--node-scale))',
+          height: 'calc(14px * var(--node-scale))'
+        }}
       />
       
       <div className="flex-1 min-w-0">
@@ -69,14 +73,16 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: TaskIte
             onChange={(e) => setContent(e.target.value)}
             onBlur={handleBlur}
             onKeyDown={(e) => e.key === 'Enter' && handleBlur()}
-            className="nodrag bg-transparent text-obsidian-text text-xs w-full focus:outline-none"
+            className="nodrag bg-transparent text-obsidian-text w-full focus:outline-none"
+            style={{ fontSize: 'calc(12px * var(--node-scale))' }}
             autoFocus
           />
         ) : (
           <span 
-            className={`text-xs block truncate select-none cursor-text ${
+            className={`block truncate select-none cursor-text ${
               task.completed ? 'text-obsidian-text-muted line-through' : 'text-obsidian-text'
             }`}
+            style={{ fontSize: 'calc(12px * var(--node-scale))' }}
             onDoubleClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
           >
             {task.content}
@@ -86,7 +92,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: TaskIte
 
       <button 
         onClick={onDelete}
-        className="text-obsidian-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+        className="text-obsidian-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 shrink-0"
       >
         <X size={14} />
       </button>

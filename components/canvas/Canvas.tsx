@@ -15,9 +15,13 @@ import NoteNode from './nodes/NoteNode';
 import TaskNode from './nodes/TaskNode';
 import ImageNode from './nodes/ImageNode';
 import GroupNode from './nodes/GroupNode';
+import AudioNode from './nodes/AudioNode';
+import VideoNode from './nodes/VideoNode';
+import SpeechToTextNode from './nodes/SpeechToTextNode';
 import CanvasToolbar from './CanvasToolbar';
 import CanvasColorPicker from './CanvasColorPicker';
 import AIChatSidebar from './AIChatSidebar';
+import MainSidebar from '../MainSidebar';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import { AppNode } from '@/types';
 
@@ -26,6 +30,9 @@ const nodeTypes = {
   task: TaskNode,
   image: ImageNode,
   group: GroupNode,
+  audio: AudioNode,
+  video: VideoNode,
+  speechToText: SpeechToTextNode,
 };
 
 const initialNodes: AppNode[] = [
@@ -144,6 +151,7 @@ function Flow() {
       minZoom={0.1}
       maxZoom={4}
       deleteKeyCode={['Backspace', 'Delete']}
+      defaultEdgeOptions={{ style: { strokeWidth: 4 } }}
     >
       <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#3d3d3d" />
       <Controls />
@@ -152,6 +160,9 @@ function Flow() {
           if (node.type === 'task') return 'var(--accent-color)';
           if (node.type === 'image') return '#4a90e2';
           if (node.type === 'group') return 'transparent';
+          if (node.type === 'audio') return '#e2a04a';
+          if (node.type === 'video') return '#e24a4a';
+          if (node.type === 'speechToText') return '#a04ae2';
           return '#3d3d3d';
         }}
         maskColor="rgba(30, 30, 30, 0.7)"
@@ -160,6 +171,7 @@ function Flow() {
       <CanvasToolbar />
       <CanvasColorPicker />
       <AIChatSidebar />
+      <MainSidebar />
     </ReactFlow>
   );
 }

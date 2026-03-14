@@ -1,84 +1,87 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Handle, Position, NodeProps, Node } from '@xyflow/react';
+import { NodeProps } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
 import { NoteNodeData } from '@/types';
 import { useCanvasStore } from '@/store/useCanvasStore';
+import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function NoteNode({ id, data, selected }: { id: string, data: NoteNodeData, selected?: boolean }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(data.title);
-  const [content, setContent] = useState(data.content);
+export default function NoteNode({ id, data, selected, width, height }: NodeProps & { data: NoteNodeData }) {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingContent, setIsEditingContent] = useState(false);
   
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const setNodes = useCanvasStore((state) => state.setNodes);
 
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsEditing(true);
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    updateNodeData(id, { title, content });
-  };
-
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setNodes((nds) => nds.filter((node) => node.id !== id));
+    setNodes((nds) => nds.filter((n) => n.id !== id));
+  };
+
+  const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setIsEditingTitle(false);
+    updateNodeData(id, { title: e.target.value });
+  };
+
+  const handleContentBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    setIsEditingContent(false);
+    updateNodeData(id, { content: e.target.value });
   };
 
   return (
-    <div 
-      className={`bg-obsidian-card border rounded-xl shadow-lg w-64 transition-colors duration-200 group ${
-        selected ? 'border-accent shadow-[0_0_15px_rgba(168,130,255,0.2)]' : 'border-obsidian-border'
-      }`}
-      style={{
-        boxShadow: selected ? '0 0 15px var(--accent-color)' : undefined,
-        borderColor: selected ? 'var(--accent-color)' : undefined,
-      }}
-      onDoubleClick={handleDoubleClick}
-    >
-      <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-obsidian-border hover:!bg-accent transition-colors" />
-      
-      <div className="p-4 flex flex-col gap-2">
-        <div className="flex justify-between items-start">
-          {isEditing ? (
+    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight={300}>
+      <div className="p-6 flex flex-col gap-4 h-full">
+        <div className="flex justify-between items-start shrink-0">
+          {isEditingTitle ? (
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={handleBlur}
-              className="nodrag bg-obsidian-bg text-obsidian-text font-bold text-sm w-full p-1 rounded border border-obsidian-border focus:outline-none focus:border-accent"
+              defaultValue={data.title || ''}
+              onBlur={handleTitleBlur}
+              onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+              className="nodrag bg-obsidian-bg text-obsidian-text font-bold w-full p-2 rounded border border-obsidian-border focus:outline-none focus:border-accent"
+              style={{ fontSize: 'calc(16px * var(--node-scale))' }}
               autoFocus
+              placeholder="Add title..."
             />
           ) : (
-            <h3 className="text-obsidian-text font-bold text-sm leading-tight select-none">{title}</h3>
+            <h3 
+              className="text-obsidian-text font-bold leading-tight select-none cursor-text flex-1"
+              style={{ fontSize: 'calc(16px * var(--node-scale))' }}
+              onDoubleClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); }}
+            >
+              {data.title || <span className="text-obsidian-text-muted italic">Double-click to add title</span>}
+            </h3>
           )}
           <button 
             onClick={handleDelete}
-            className="text-obsidian-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+            className="text-obsidian-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1 ml-2 shrink-0"
           >
-            <Trash2 size={14} />
+            <Trash2 size={16} />
           </button>
         </div>
 
-        {isEditing ? (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onBlur={handleBlur}
-            className="nodrag bg-obsidian-bg text-obsidian-text-muted text-xs w-full p-2 rounded border border-obsidian-border focus:outline-none focus:border-accent resize-none min-h-[80px]"
-          />
-        ) : (
-          <div className="text-obsidian-text-muted text-xs whitespace-pre-wrap select-none leading-relaxed">
-            {content}
-          </div>
-        )}
+        <div className="flex-1 overflow-y-auto flex flex-col min-h-0">
+          {isEditingContent ? (
+            <textarea
+              defaultValue={data.content || ''}
+              onBlur={handleContentBlur}
+              className="nodrag bg-obsidian-bg text-obsidian-text-muted w-full h-full p-3 rounded border border-obsidian-border focus:outline-none focus:border-accent resize-none"
+              style={{ fontSize: 'calc(14px * var(--node-scale))' }}
+              autoFocus
+              placeholder="Add content..."
+            />
+          ) : (
+            <div 
+              className="text-obsidian-text-muted whitespace-pre-wrap select-none leading-relaxed cursor-text h-full"
+              style={{ fontSize: 'calc(14px * var(--node-scale))' }}
+              onDoubleClick={(e) => { e.stopPropagation(); setIsEditingContent(true); }}
+            >
+              {data.content || <span className="italic opacity-50">Double-click to add content</span>}
+            </div>
+          )}
+        </div>
       </div>
-
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3 !bg-obsidian-border hover:!bg-accent transition-colors" />
-    </div>
+    </BaseNodeWrapper>
   );
 }

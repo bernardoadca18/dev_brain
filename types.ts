@@ -26,8 +26,28 @@ export interface GroupNodeData extends Record<string, unknown> {
   title: string;
 }
 
+export interface AudioNodeData extends Record<string, unknown> {
+  title?: string;
+  audioUrl?: string;
+  description?: string;
+}
+
+export interface VideoNodeData extends Record<string, unknown> {
+  title?: string;
+  videoUrl?: string;
+  description?: string;
+}
+
+export interface SpeechToTextNodeData extends Record<string, unknown> {
+  title?: string;
+  transcript?: string;
+}
+
 export type AppNode = 
   | Node<NoteNodeData, 'note'>
   | Node<TaskNodeData, 'task'>
   | Node<ImageNodeData, 'image'>
-  | Node<GroupNodeData, 'group'>;
+  | Node<GroupNodeData, 'group'>
+  | Node<AudioNodeData, 'audio'>
+  | Node<VideoNodeData, 'video'>
+  | Node<SpeechToTextNodeData, 'speechToText'>;
