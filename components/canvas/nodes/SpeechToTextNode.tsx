@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { SpeechToTextNodeData } from '@/types';
 import { Trash2, Mic, Square, Loader2 } from 'lucide-react';
@@ -15,27 +15,23 @@ declare global {
   }
 }
 
-export default function SpeechToTextNode({ id, data, selected, width, height }: NodeProps & { data: SpeechToTextNodeData }) {
+function SpeechToTextNode({ id, data, selected, dragging, width, height }: NodeProps & { data: SpeechToTextNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
-  const [isSupported, setIsSupported] = useState(true);
+  
+  const isSupported = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
   
   const recognitionRef = useRef<any>(null);
   const transcriptRef = useRef(data.transcript || '');
 
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   useEffect(() => {
-    // Initialize SpeechRecognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      setIsSupported(false);
-      return;
-    }
+    if (!isSupported) return;
 
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
@@ -79,7 +75,7 @@ export default function SpeechToTextNode({ id, data, selected, width, height }: 
         recognitionRef.current.stop();
       }
     };
-  }, [id, updateNodeData]);
+  }, [id, updateNodeData, isSupported]);
 
   const toggleListening = () => {
     if (isListening) {
@@ -97,7 +93,7 @@ export default function SpeechToTextNode({ id, data, selected, width, height }: 
   };
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
+    deleteNode(id);
   };
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -112,7 +108,7 @@ export default function SpeechToTextNode({ id, data, selected, width, height }: 
   };
 
   return (
-    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight={350}>
+    <BaseNodeWrapper id={id} selected={selected} dragging={dragging} width={width} height={height} defaultWidth={400} defaultHeight={350}>
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
@@ -206,3 +202,6 @@ export default function SpeechToTextNode({ id, data, selected, width, height }: 
     </BaseNodeWrapper>
   );
 }
+
+export default memo(SpeechToTextNode);
+

@@ -1,22 +1,22 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { VideoNodeData } from '@/types';
 import { Trash2, Upload, Video } from 'lucide-react';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function VideoNode({ id, data, selected, width, height }: NodeProps & { data: VideoNodeData }) {
+function VideoNode({ id, data, selected, dragging, width, height }: NodeProps & { data: VideoNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
+    deleteNode(id);
   };
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -42,7 +42,7 @@ export default function VideoNode({ id, data, selected, width, height }: NodePro
   };
 
   return (
-    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={500} defaultHeight={400}>
+    <BaseNodeWrapper id={id} selected={selected} dragging={dragging} width={width} height={height} defaultWidth={500} defaultHeight={400}>
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
@@ -137,3 +137,6 @@ export default function VideoNode({ id, data, selected, width, height }: NodePro
     </BaseNodeWrapper>
   );
 }
+
+export default memo(VideoNode);
+

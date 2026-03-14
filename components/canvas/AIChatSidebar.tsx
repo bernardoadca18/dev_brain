@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Panel } from '@xyflow/react';
 import { MessageSquare, X, Send } from 'lucide-react';
 
-export default function AIChatSidebar() {
+function AIChatSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai', content: string }[]>([
     { role: 'ai', content: 'Hello! I am your dev_brain assistant. How can I help you organize your project today?' }
@@ -84,3 +84,5 @@ export default function AIChatSidebar() {
     </Panel>
   );
 }
+
+export default memo(AIChatSidebar);

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Menu, LayoutDashboard, Map, Settings, Download, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function MainSidebar() {
+function MainSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -78,3 +78,5 @@ export default function MainSidebar() {
     </>
   );
 }
+
+export default memo(MainSidebar);

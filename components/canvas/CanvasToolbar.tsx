@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import { Mic, Video, FileAudio, Type, Image as ImageIcon, CheckSquare, FileText, LayoutGrid } from 'lucide-react';
 import { AppNode } from '@/types';
 
-export default function CanvasToolbar() {
+function CanvasToolbar() {
   const { screenToFlowPosition } = useReactFlow();
   const setNodes = useCanvasStore((state) => state.setNodes);
+  const accentColor = useCanvasStore((state) => state.accentColor);
+  const setAccentColor = useCanvasStore((state) => state.setAccentColor);
 
   const createNode = (type: AppNode['type'], defaultData: any, defaultStyle?: any) => {
     const position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
@@ -79,6 +81,17 @@ export default function CanvasToolbar() {
         <LayoutGrid size={16} />
         <span className="hidden sm:inline">Group</span>
       </button>
+      <div className="w-px h-6 bg-obsidian-border mx-1" />
+      <div className="flex items-center gap-2 px-3 py-2" title="Accent Color">
+        <input 
+          type="color" 
+          value={accentColor} 
+          onChange={(e) => setAccentColor(e.target.value)}
+          className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent"
+        />
+      </div>
     </Panel>
   );
 }
+
+export default memo(CanvasToolbar);

@@ -1,4 +1,4 @@
-import { Node } from '@xyflow/react';
+import { Node, Edge } from '@xyflow/react';
 
 export interface NoteNodeData extends Record<string, unknown> {
   title: string;
@@ -51,3 +51,24 @@ export type AppNode =
   | Node<AudioNodeData, 'audio'>
   | Node<VideoNodeData, 'video'>
   | Node<SpeechToTextNodeData, 'speechToText'>;
+
+export interface FolderNode {
+  id: string;
+  name: string;
+  type: 'folder';
+  children: FileSystemNode[];
+  isExpanded: boolean;
+}
+
+export interface CanvasFileNode {
+  id: string;
+  name: string;
+  type: 'canvas';
+  canvasData: {
+    nodes: AppNode[];
+    edges: Edge[];
+    accentColor: string;
+  };
+}
+
+export type FileSystemNode = FolderNode | CanvasFileNode;

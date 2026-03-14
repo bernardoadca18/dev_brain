@@ -1,22 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
 import { NoteNodeData } from '@/types';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function NoteNode({ id, data, selected, width, height }: NodeProps & { data: NoteNodeData }) {
+function NoteNode({ id, data, selected, dragging, width, height }: NodeProps & { data: NoteNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingContent, setIsEditingContent] = useState(false);
   
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setNodes((nds) => nds.filter((n) => n.id !== id));
+    deleteNode(id);
   };
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -30,7 +30,7 @@ export default function NoteNode({ id, data, selected, width, height }: NodeProp
   };
 
   return (
-    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight={300}>
+    <BaseNodeWrapper id={id} selected={selected} dragging={dragging} width={width} height={height} defaultWidth={400} defaultHeight={300}>
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
@@ -85,3 +85,5 @@ export default function NoteNode({ id, data, selected, width, height }: NodeProp
     </BaseNodeWrapper>
   );
 }
+
+export default memo(NoteNode);

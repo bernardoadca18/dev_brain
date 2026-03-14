@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { Trash2, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,14 +24,14 @@ import { TaskNodeData, Task } from '@/types';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function TaskNode({ id, data, selected, width, height }: NodeProps & { data: TaskNodeData }) {
+function TaskNode({ id, data, selected, dragging, width, height }: NodeProps & { data: TaskNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(data.title);
   const [tasks, setTasks] = useState<Task[]>(data.tasks || []);
   const [newTaskContent, setNewTaskContent] = useState('');
   
   const updateNodeDataStore = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -55,7 +55,7 @@ export default function TaskNode({ id, data, selected, width, height }: NodeProp
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setNodes((nds) => nds.filter((node) => node.id !== id));
+    deleteNode(id);
   };
 
   const addTask = (e: React.FormEvent) => {
@@ -100,7 +100,7 @@ export default function TaskNode({ id, data, selected, width, height }: NodeProp
   };
 
   return (
-    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight="auto">
+    <BaseNodeWrapper id={id} selected={selected} dragging={dragging} width={width} height={height} defaultWidth={400} defaultHeight="auto">
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
@@ -175,3 +175,5 @@ export default function TaskNode({ id, data, selected, width, height }: NodeProp
     </BaseNodeWrapper>
   );
 }
+
+export default memo(TaskNode);

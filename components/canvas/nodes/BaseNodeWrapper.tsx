@@ -4,6 +4,7 @@ import { Handle, Position, NodeResizer } from '@xyflow/react';
 interface BaseNodeWrapperProps {
   id: string;
   selected?: boolean;
+  dragging?: boolean;
   width?: number;
   height?: number;
   children: React.ReactNode;
@@ -18,6 +19,7 @@ interface BaseNodeWrapperProps {
 export default function BaseNodeWrapper({
   id,
   selected,
+  dragging,
   width,
   height,
   children,
@@ -48,14 +50,16 @@ export default function BaseNodeWrapper({
         handleClassName="w-5 h-5 rounded-sm border-none bg-accent opacity-0 hover:opacity-100 transition-opacity"
       />
       <div
-        className={`w-full h-full flex flex-col transition-colors duration-200 group relative ${
+        className={`w-full h-full flex flex-col transition-all duration-200 group relative ${
           isGroup
             ? 'bg-obsidian-card/30 border-2 rounded-xl backdrop-blur-sm'
             : 'bg-obsidian-card border rounded-xl shadow-lg'
         } ${
           selected
-            ? 'border-accent shadow-[0_0_15px_rgba(168,130,255,0.2)]'
+            ? 'border-accent shadow-[0_0_15px_rgba(168,130,255,0.2)] z-10'
             : isGroup ? 'border-obsidian-border/50' : 'border-obsidian-border'
+        } ${
+          dragging ? 'scale-[1.02] shadow-xl shadow-accent/20 z-50' : ''
         }`}
         style={{
           boxShadow: selected ? '0 0 15px var(--accent-color)' : undefined,

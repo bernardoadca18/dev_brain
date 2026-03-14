@@ -1,20 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { ImageNodeData } from '@/types';
 import { Trash2, Upload, ImageIcon } from 'lucide-react';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function ImageNode({ id, data, selected, width, height }: NodeProps & { data: ImageNodeData }) {
+function ImageNode({ id, data, selected, dragging, width, height }: NodeProps & { data: ImageNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
+    deleteNode(id);
   };
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -43,7 +43,7 @@ export default function ImageNode({ id, data, selected, width, height }: NodePro
   };
 
   return (
-    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight={400}>
+    <BaseNodeWrapper id={id} selected={selected} dragging={dragging} width={width} height={height} defaultWidth={400} defaultHeight={400}>
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
@@ -85,6 +85,7 @@ export default function ImageNode({ id, data, selected, width, height }: NodePro
           
           {data.imageUrl ? (
             <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={data.imageUrl} 
                 alt={data.title || 'Node image'} 
@@ -136,3 +137,6 @@ export default function ImageNode({ id, data, selected, width, height }: NodePro
     </BaseNodeWrapper>
   );
 }
+
+export default memo(ImageNode);
+

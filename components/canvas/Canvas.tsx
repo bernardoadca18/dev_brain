@@ -9,6 +9,7 @@ import {
   BackgroundVariant,
   ReactFlowProvider,
   useReactFlow,
+  Node,
 } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import NoteNode from './nodes/NoteNode';
@@ -19,11 +20,12 @@ import AudioNode from './nodes/AudioNode';
 import VideoNode from './nodes/VideoNode';
 import SpeechToTextNode from './nodes/SpeechToTextNode';
 import CanvasToolbar from './CanvasToolbar';
-import CanvasColorPicker from './CanvasColorPicker';
+import HueShifter from './HueShifter';
 import AIChatSidebar from './AIChatSidebar';
 import MainSidebar from '../MainSidebar';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import { AppNode } from '@/types';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 const nodeTypes = {
   note: NoteNode,
@@ -96,8 +98,11 @@ function Flow() {
   const accentColor = useCanvasStore((state) => state.accentColor);
   const hasInitialized = useCanvasStore((state) => state.hasInitialized);
   const setHasInitialized = useCanvasStore((state) => state.setHasInitialized);
+  const setSelectedNodeId = useCanvasStore((state) => state.setSelectedNodeId);
 
   const { screenToFlowPosition } = useReactFlow();
+  
+  useKeyboardShortcuts();
 
   // Initialize store with initial data only if not initialized
   useEffect(() => {
@@ -112,6 +117,7 @@ function Flow() {
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
+      setSelectedNodeId(null);
       const now = Date.now();
       if (now - lastClickTime.current < 300) {
         const position = screenToFlowPosition({
@@ -130,7 +136,14 @@ function Flow() {
       }
       lastClickTime.current = now;
     },
-    [screenToFlowPosition, setNodes]
+    [screenToFlowPosition, setNodes, setSelectedNodeId]
+  );
+
+  const onNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      setSelectedNodeId(node.id);
+    },
+    [setSelectedNodeId]
   );
 
   useEffect(() => {
@@ -145,6 +158,7 @@ function Flow() {
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
       onPaneClick={onPaneClick}
+      onNodeClick={onNodeClick}
       nodeTypes={nodeTypes}
       fitView
       className="bg-obsidian-bg"
@@ -156,6 +170,7 @@ function Flow() {
       <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="#3d3d3d" />
       <Controls />
       <MiniMap 
+        position="bottom-left"
         nodeColor={(node) => {
           if (node.type === 'task') return 'var(--accent-color)';
           if (node.type === 'image') return '#4a90e2';
@@ -169,7 +184,7 @@ function Flow() {
       />
       
       <CanvasToolbar />
-      <CanvasColorPicker />
+      <HueShifter />
       <AIChatSidebar />
       <MainSidebar />
     </ReactFlow>

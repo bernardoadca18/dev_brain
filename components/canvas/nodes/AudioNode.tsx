@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { AudioNodeData } from '@/types';
 import { Trash2, Upload, Mic, Square, Play, Pause } from 'lucide-react';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function AudioNode({ id, data, selected, width, height }: NodeProps & { data: AudioNodeData }) {
+function AudioNode({ id, data, selected, dragging, width, height }: NodeProps & { data: AudioNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -19,10 +19,10 @@ export default function AudioNode({ id, data, selected, width, height }: NodePro
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
+    deleteNode(id);
   };
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -109,7 +109,7 @@ export default function AudioNode({ id, data, selected, width, height }: NodePro
   };
 
   return (
-    <BaseNodeWrapper id={id} selected={selected} width={width} height={height} defaultWidth={400} defaultHeight={300}>
+    <BaseNodeWrapper id={id} selected={selected} dragging={dragging} width={width} height={height} defaultWidth={400} defaultHeight={300}>
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex justify-between items-start shrink-0">
           {isEditingTitle ? (
@@ -238,3 +238,6 @@ export default function AudioNode({ id, data, selected, width, height }: NodePro
     </BaseNodeWrapper>
   );
 }
+
+export default memo(AudioNode);
+

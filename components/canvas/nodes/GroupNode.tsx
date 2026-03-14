@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { NodeProps } from '@xyflow/react';
 import { GroupNodeData } from '@/types';
 import { useCanvasStore } from '@/store/useCanvasStore';
 import BaseNodeWrapper from './BaseNodeWrapper';
 
-export default function GroupNode({ id, data, selected, width, height }: NodeProps & { data: GroupNodeData }) {
+function GroupNode({ id, data, selected, dragging, width, height }: NodeProps & { data: GroupNodeData }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const setNodes = useCanvasStore((state) => state.setNodes);
+  const deleteNode = useCanvasStore((state) => state.deleteNode);
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsEditingTitle(false);
@@ -15,13 +15,14 @@ export default function GroupNode({ id, data, selected, width, height }: NodePro
   };
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
+    deleteNode(id);
   };
 
   return (
     <BaseNodeWrapper 
       id={id} 
       selected={selected} 
+      dragging={dragging}
       width={width} 
       height={height} 
       isGroup={true} 
@@ -60,3 +61,6 @@ export default function GroupNode({ id, data, selected, width, height }: NodePro
     </BaseNodeWrapper>
   );
 }
+
+export default memo(GroupNode);
+
