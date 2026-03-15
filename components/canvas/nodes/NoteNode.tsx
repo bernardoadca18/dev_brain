@@ -86,4 +86,12 @@ function NoteNode({ id, data, selected, dragging, width, height }: NodeProps & {
   );
 }
 
-export default memo(NoteNode);
+export default memo(NoteNode, (prevProps, nextProps) => {
+  return (
+    prevProps.selected === nextProps.selected &&
+    prevProps.dragging === nextProps.dragging &&
+    prevProps.width === nextProps.width &&
+    prevProps.height === nextProps.height &&
+    prevProps.data === nextProps.data
+  );
+});

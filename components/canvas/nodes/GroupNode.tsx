@@ -62,5 +62,13 @@ function GroupNode({ id, data, selected, dragging, width, height }: NodeProps & 
   );
 }
 
-export default memo(GroupNode);
+export default memo(GroupNode, (prevProps, nextProps) => {
+  return (
+    prevProps.selected === nextProps.selected &&
+    prevProps.dragging === nextProps.dragging &&
+    prevProps.width === nextProps.width &&
+    prevProps.height === nextProps.height &&
+    prevProps.data === nextProps.data
+  );
+});
 

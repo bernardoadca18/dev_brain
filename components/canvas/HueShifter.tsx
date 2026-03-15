@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, memo } from 'react';
 import { Copy, Check, Palette, X } from 'lucide-react';
-import { generatePalette } from '@/lib/colorUtils';
+import { generatePalette, hexToHsv, hsvToHex, hexToRgb, rgbToHex, hexToHsl, hslToHex } from '@/lib/colorUtils';
 import { useCanvasStore } from '@/store/useCanvasStore';
 
 function HueShifter() {
@@ -38,6 +38,26 @@ function HueShifter() {
     }
   };
 
+  const handleHsvChange = (component: 'h' | 's' | 'v', value: number) => {
+    try {
+      const currentHsv = hexToHsv(baseColor);
+      const newHsv = { ...currentHsv, [component]: value };
+      setBaseColor(hsvToHex(newHsv.h, newHsv.s, newHsv.v));
+    } catch (e) {}
+  };
+
+  const currentHsv = React.useMemo(() => {
+    try { return hexToHsv(baseColor); } catch (e) { return { h: 0, s: 0, v: 0 }; }
+  }, [baseColor]);
+
+  const currentRgb = React.useMemo(() => {
+    try { return hexToRgb(baseColor); } catch (e) { return { r: 0, g: 0, b: 0 }; }
+  }, [baseColor]);
+
+  const currentHsl = React.useMemo(() => {
+    try { return hexToHsl(baseColor); } catch (e) { return { h: 0, s: 0, l: 0 }; }
+  }, [baseColor]);
+
   return (
     <>
       <button
@@ -63,7 +83,7 @@ function HueShifter() {
             </button>
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
             <div>
               <label className="block text-xs font-medium text-zinc-400 mb-1">Base Color (HEX)</label>
               <div className="flex gap-2">
@@ -82,7 +102,63 @@ function HueShifter() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div>
+                <label className="block text-zinc-400 mb-1">RGB</label>
+                <div className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-300">
+                  {Math.round(currentRgb.r)}, {Math.round(currentRgb.g)}, {Math.round(currentRgb.b)}
+                </div>
+              </div>
+              <div>
+                <label className="block text-zinc-400 mb-1">HSL</label>
+                <div className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-300">
+                  {Math.round(currentHsl.h)}°, {Math.round(currentHsl.s)}%, {Math.round(currentHsl.l)}%
+                </div>
+              </div>
+              <div>
+                <label className="block text-zinc-400 mb-1">HSV</label>
+                <div className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-zinc-300">
+                  {Math.round(currentHsv.h)}°, {Math.round(currentHsv.s)}%, {Math.round(currentHsv.v)}%
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-zinc-800">
+              <label className="block text-xs font-medium text-zinc-400 mb-1">HSV Adjustments</label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-500 w-4">H</span>
+                <input
+                  type="range" min="0" max="360"
+                  value={currentHsv.h}
+                  onChange={(e) => handleHsvChange('h', Number(e.target.value))}
+                  className="flex-1 accent-accent"
+                />
+                <span className="text-xs text-zinc-400 w-8 text-right">{Math.round(currentHsv.h)}°</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-500 w-4">S</span>
+                <input
+                  type="range" min="0" max="100"
+                  value={currentHsv.s}
+                  onChange={(e) => handleHsvChange('s', Number(e.target.value))}
+                  className="flex-1 accent-accent"
+                />
+                <span className="text-xs text-zinc-400 w-8 text-right">{Math.round(currentHsv.s)}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-500 w-4">V</span>
+                <input
+                  type="range" min="0" max="100"
+                  value={currentHsv.v}
+                  onChange={(e) => handleHsvChange('v', Number(e.target.value))}
+                  className="flex-1 accent-accent"
+                />
+                <span className="text-xs text-zinc-400 w-8 text-right">{Math.round(currentHsv.v)}%</span>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2 border-t border-zinc-800">
+              <label className="block text-xs font-medium text-zinc-400 mb-1">Palette Generator</label>
               <div>
                 <div className="flex justify-between text-xs text-zinc-400 mb-1">
                   <label>Hue Shift (ΔH)</label>

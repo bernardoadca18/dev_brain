@@ -24,8 +24,10 @@ import HueShifter from './HueShifter';
 import AIChatSidebar from './AIChatSidebar';
 import MainSidebar from '../MainSidebar';
 import { useCanvasStore } from '@/store/useCanvasStore';
+import { useFileSystemStore } from '@/store/useFileSystemStore';
 import { AppNode } from '@/types';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useAutoSave } from '@/hooks/useAutoSave';
 
 const nodeTypes = {
   note: NoteNode,
@@ -96,13 +98,17 @@ function Flow() {
   const setNodes = useCanvasStore((state) => state.setNodes);
   const setEdges = useCanvasStore((state) => state.setEdges);
   const accentColor = useCanvasStore((state) => state.accentColor);
+  const setAccentColor = useCanvasStore((state) => state.setAccentColor);
   const hasInitialized = useCanvasStore((state) => state.hasInitialized);
   const setHasInitialized = useCanvasStore((state) => state.setHasInitialized);
   const setSelectedNodeId = useCanvasStore((state) => state.setSelectedNodeId);
 
+  const activeFileId = useFileSystemStore((state) => state.activeFileId);
+
   const { screenToFlowPosition } = useReactFlow();
   
   useKeyboardShortcuts();
+  useAutoSave();
 
   // Initialize store with initial data only if not initialized
   useEffect(() => {
@@ -112,6 +118,15 @@ function Flow() {
       setHasInitialized(true);
     }
   }, [hasInitialized, setNodes, setEdges, setHasInitialized]);
+
+  // Handle active file deletion
+  useEffect(() => {
+    if (activeFileId === null) {
+      setNodes([]);
+      setEdges([]);
+      setAccentColor('#a882ff');
+    }
+  }, [activeFileId, setNodes, setEdges, setAccentColor]);
 
   const lastClickTime = useRef(0);
 
@@ -187,6 +202,15 @@ function Flow() {
       <HueShifter />
       <AIChatSidebar />
       <MainSidebar />
+      
+      {activeFileId === null && (
+        <div className="absolute inset-0 z-40 bg-obsidian-bg/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-obsidian-text mb-2">No Canvas Selected</h2>
+            <p className="text-obsidian-text-muted">Select a canvas from the sidebar or create a new one.</p>
+          </div>
+        </div>
+      )}
     </ReactFlow>
   );
 }

@@ -203,5 +203,13 @@ function SpeechToTextNode({ id, data, selected, dragging, width, height }: NodeP
   );
 }
 
-export default memo(SpeechToTextNode);
+export default memo(SpeechToTextNode, (prevProps, nextProps) => {
+  return (
+    prevProps.selected === nextProps.selected &&
+    prevProps.dragging === nextProps.dragging &&
+    prevProps.width === nextProps.width &&
+    prevProps.height === nextProps.height &&
+    prevProps.data === nextProps.data
+  );
+});
 

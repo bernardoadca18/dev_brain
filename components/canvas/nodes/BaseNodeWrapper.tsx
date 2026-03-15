@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
 
 interface BaseNodeWrapperProps {
@@ -16,7 +16,7 @@ interface BaseNodeWrapperProps {
   defaultHeight?: number | 'auto';
 }
 
-export default function BaseNodeWrapper({
+const BaseNodeWrapper = memo(function BaseNodeWrapper({
   id,
   selected,
   dragging,
@@ -81,4 +81,6 @@ export default function BaseNodeWrapper({
       </div>
     </>
   );
-}
+});
+
+export default BaseNodeWrapper;

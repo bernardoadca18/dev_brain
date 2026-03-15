@@ -76,6 +76,14 @@ const addNodeToTree = (
   });
 };
 
+const isNodeInTree = (tree: FileSystemNode[], id: string): boolean => {
+  for (const node of tree) {
+    if (node.id === id) return true;
+    if (node.type === 'folder' && isNodeInTree(node.children, id)) return true;
+  }
+  return false;
+};
+
 export const useFileSystemStore = create<FileSystemState>()(
   persist(
     (set, get) => ({
@@ -147,9 +155,10 @@ export const useFileSystemStore = create<FileSystemState>()(
       deleteNode: (id) => {
         set((state) => {
           const newTree = deleteNodeInTree(state.fileTree, id);
+          const activeStillExists = state.activeFileId ? isNodeInTree(newTree, state.activeFileId) : false;
           return {
             fileTree: newTree,
-            activeFileId: state.activeFileId === id ? null : state.activeFileId,
+            activeFileId: activeStillExists ? state.activeFileId : null,
           };
         });
       },

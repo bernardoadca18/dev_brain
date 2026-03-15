@@ -176,4 +176,12 @@ function TaskNode({ id, data, selected, dragging, width, height }: NodeProps & {
   );
 }
 
-export default memo(TaskNode);
+export default memo(TaskNode, (prevProps, nextProps) => {
+  return (
+    prevProps.selected === nextProps.selected &&
+    prevProps.dragging === nextProps.dragging &&
+    prevProps.width === nextProps.width &&
+    prevProps.height === nextProps.height &&
+    prevProps.data === nextProps.data
+  );
+});
