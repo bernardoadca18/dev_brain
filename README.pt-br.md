@@ -1,9 +1,6 @@
 # Dev Brain | AI-Powered Infinite Canvas
 
-<p align="right">
-  🇧🇷 Português | 🇺🇸 [English](./README.md)
-</p>
-
+🇧🇷 Português | 🇺🇸 [English](./README.md)
 ---
 
 ## 🚀 Visão Geral
