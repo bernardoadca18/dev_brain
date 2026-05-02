@@ -5,7 +5,7 @@ import './globals.css'; // Global styles
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Vália Wiki & Planner',
+  title: 'Dev Brain',
   description: 'A visual project management tool merging infinite canvas mapping with Kanban-style task management.',
 };
 
