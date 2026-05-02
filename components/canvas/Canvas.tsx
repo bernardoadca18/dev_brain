@@ -45,8 +45,8 @@ const initialNodes: AppNode[] = [
     type: 'note',
     position: { x: 250, y: 100 },
     data: {
-      title: 'O Sacro Reino de Vália',
-      content: 'The central kingdom of the game. Known for its towering spires, deep religious roots, and the ever-present fog that surrounds its borders. Ruled by the High Pontiff.',
+      title: '',
+      content: '',
     },
   },
   {
@@ -54,8 +54,8 @@ const initialNodes: AppNode[] = [
     type: 'note',
     position: { x: 100, y: 300 },
     data: {
-      title: 'Lore & History',
-      content: '- Founded in the First Era after the Great Sundering.\n- The "Covenant of Light" is the primary religion.\n- Ancient ruins lie beneath the capital city.',
+      title: '',
+      content: '',
     },
   },
   {
@@ -63,8 +63,8 @@ const initialNodes: AppNode[] = [
     type: 'note',
     position: { x: 400, y: 300 },
     data: {
-      title: 'Key Characters',
-      content: '- High Pontiff Aldous: The current ruler, secretly corrupted.\n- Seraphina: Captain of the Vanguard, loyal but questioning.\n- "The Whisperer": A rebel leader operating in the lower wards.',
+      title: '',
+      content: '',
     },
   },
   {
@@ -72,12 +72,12 @@ const initialNodes: AppNode[] = [
     type: 'task',
     position: { x: 700, y: 100 },
     data: {
-      title: 'Level Design To-Do\'s',
+      title: '',
       tasks: [
-        { id: 't1', content: 'Block out the Grand Cathedral', completed: true },
-        { id: 't2', content: 'Design the Lower Wards slums', completed: false },
-        { id: 't3', content: 'Place enemy spawns in the Catacombs', completed: false },
-        { id: 't4', content: 'Lighting pass on the Royal Gardens', completed: false },
+        { id: 't1', content: '', completed: true },
+        { id: 't2', content: '', completed: false },
+        { id: 't3', content: '', completed: false },
+        { id: 't4', content: '', completed: false },
       ],
     },
   },
