@@ -3,7 +3,7 @@
 🇧🇷 Português | 🇺🇸 [English](./README.md)
 ---
 
-## 🚀 Visão Geral
+## Visão Geral
 
 **Dev Brain** é uma plataforma de produtividade e organização visual projetada para desenvolvedores e criadores. Utilizando uma interface de "infinite canvas" (lona infinita), o projeto permite a estruturação de ideias, gestão de tarefas e integração com inteligência artificial em um ambiente unificado e altamente customizável.
 
@@ -11,16 +11,16 @@ O projeto foi construído para ser o "cérebro digital" de um desenvolvedor. Ele
 
 ---
 
-## ✨ Funcionalidades Principais
+## Funcionalidades Principais
 
 - **Infinite Canvas (Lona Infinita):** Navegação fluida com zoom e pan, permitindo organizar informações sem limites espaciais.
 
 - **Ecossistema de Nós (Nodes):**
-  - 📝 **Notas:** Editor de texto para documentação e ideias  
-  - ✅ **Tarefas (Tasks):** Gestão de checklists diretamente na lona  
-  - 🖼️ **Mídia:** Suporte para imagens, áudio e vídeo  
-  - 🎙️ **Speech-to-Text:** Conversão de voz em texto integrada  
-  - 📁 **Grupos:** Agrupamento lógico de nós relacionados  
+  - **Notas:** Editor de texto para documentação e ideias  
+  - **Tarefas (Tasks):** Gestão de checklists diretamente na lona  
+  - **Mídia:** Suporte para imagens, áudio e vídeo  
+  - **Speech-to-Text:** Conversão de voz em texto integrada  
+  - **Grupos:** Agrupamento lógico de nós relacionados  
 
 - **IA Integrada:** Chat lateral com integração ao Google Gemini (`@google/genai`)  
 
@@ -32,7 +32,7 @@ O projeto foi construído para ser o "cérebro digital" de um desenvolvedor. Ele
 
 ---
 
-## 🛠️ Stack Técnica
+## Stack Técnica
 
 ### Frontend & Frameworks
 
@@ -51,7 +51,7 @@ O projeto foi construído para ser o "cérebro digital" de um desenvolvedor. Ele
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## Arquitetura do Sistema
 
 ```
 /store
@@ -67,7 +67,7 @@ O projeto foi construído para ser o "cérebro digital" de um desenvolvedor. Ele
 
 ---
 
-## ⚙️ Instalação e Execução
+## Instalação e Execução
 
 ### 1. Clone o repositório
 
@@ -101,7 +101,7 @@ http://localhost:3000
 
 ---
 
-## ⌨️ Atalhos de Teclado
+## Atalhos de Teclado
 
 - Ctrl + Z → Desfazer  
 - Ctrl + Y → Refazer  
@@ -110,6 +110,6 @@ http://localhost:3000
 
 ---
 
-## 📝 Licença
+## Licença
 
 Este projeto é de uso privado.
