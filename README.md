@@ -5,7 +5,6 @@
 ## Overview
 
 **Dev Brain** is a productivity and visual organization platform designed for developers and creators. Built around an "infinite canvas" interface, it allows you to structure ideas, manage tasks, and integrate AI into a unified and highly customizable environment.
-
 The project is designed to act as a developer’s "digital brain", replacing linear task lists with a dynamic visual workflow where you can connect notes, level design checklists, media assets, and voice transcriptions into a single interactive graph.
 
 ---
